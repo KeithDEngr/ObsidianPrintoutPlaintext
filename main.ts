@@ -187,7 +187,7 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 
 	async embedPlaintextFiles(app: App, vault: Vault) {
 		/**
-		 #![[filename]]
+		 ![[filename]]
 		 ---
 		 ```filetype
 		 content
@@ -200,7 +200,7 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 		const currentFileContents = await vault.read(currentFile); // had this cachedRead but revised to hopefully improve not overriding file changes.
 		//console.log("\ncurrent contents:");
 		//console.log(currentFileContents);
-		let currentFileContents_split = currentFileContents.split("#![[");
+		let currentFileContents_split = currentFileContents.split("![[");
 		let finalFileContents = currentFileContents_split[0];
 		for (const item of currentFileContents_split.slice(1)){
 			//console.log("item: \n"+item);
@@ -213,7 +213,7 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 
 				if ((otherFileContents.contains("```")) | (reject_filetypes.contains(currentContent[0].split('.')[1])) ){
 					console.log("file ("+currentContent[0]+") contains ``` or is a rejected filetype. Ignoring");
-					finalFileContents+="#![["+currentContent[0]+"]]\n"+currentContent[1];
+					finalFileContents+="![["+currentContent[0]+"]]\n"+currentContent[1];
 				} else{
 
 					// check if there is a file printout after. if so, remove it
@@ -230,9 +230,9 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 					if (!reject_filetypes.contains(currentContent[0].split('.')[1])){
 						console.log("file ("+currentContent[0]+") is being added.")
 						if (Object.keys(filetype).includes(currentContent[0].split('.')[1])){
-							finalFileContents+="#![["+currentContent[0]+"]]\n\n---\n```"+filetype[currentContent[0].split('.')[1]]+"\n"+otherFileContents+"\n```\n---\n"+currentContent[1];
+							finalFileContents+="![["+currentContent[0]+"]]\n\n---\n```"+filetype[currentContent[0].split('.')[1]]+"\n"+otherFileContents+"\n```\n---\n"+currentContent[1];
 						} else {
-							finalFileContents+="#![["+currentContent[0]+"]]\n\n---\n```"+currentContent[0].split('.')[1]+"\n"+otherFileContents+"\n```\n---\n"+currentContent[1];
+							finalFileContents+="![["+currentContent[0]+"]]\n\n---\n```"+currentContent[0].split('.')[1]+"\n"+otherFileContents+"\n```\n---\n"+currentContent[1];
 						}
 
 						//finalFileContents+=currentContent[0]+currentContent[1]+"\n---\n```"+currentContent[0].split('.')[1]+"\n```\n---\n";
@@ -240,12 +240,12 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 						//console.log("contents: \n"+otherFileContents);
 					}else{
 						console.log("skipping .md file"+currentContent[0]);
-						finalFileContents+="#![["+currentContent[0]+"]]\n\n"+currentContent[1];
+						finalFileContents+="![["+currentContent[0]+"]]\n\n"+currentContent[1];
 					}
 				}
 			} catch {
 				console.log("failed to add file ("+currentContent[0]+"). Not found.");
-				finalFileContents+="#![["+currentContent[0]+"]]\n"+currentContent[1];
+				finalFileContents+="![["+currentContent[0]+"]]\n"+currentContent[1];
 			}
 		}
 		console.log("\nfinal contents:");
