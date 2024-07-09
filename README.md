@@ -1,6 +1,19 @@
 # ObsidianPrintoutPlaintext
 This is a plugin I made to printout plaintext files in Obsidian. It doesn't quite work the same as embeded files normally work but it filled my need to seeing a plaintext file from within obsidian.
 
+# Use:
+#![[folder/folder/filename.txt]]
+    this will cause a printout of the file(filename.txt located in Vault/folder/folder) to be put into the current file following this in the format:
+    
+---
+
+```
+FILE CONTENTS
+```
+---
+
+
+
 Note: it doesn't manage file prinouts recursively. It's intended for basic file inclusion such as printing out a python script file in my notes.
 
 ---

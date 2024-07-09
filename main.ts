@@ -32,13 +32,14 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 		await this.loadSettings();
 
 
-		this.registerInterval(
+		this.registerInterval( // TODO: is this the best process to do this? Is there a better way to register this (view change or something like that?)
 			window.setInterval(() => this.embedPlaintextFiles(this.app,this.app.vault), 10000)
 		);
 
 
 		// This was an attempt at revising the markdown to embed a plaintext file by registering a post processor
-	    // Problem: in the markdown post processor I can't do delays or wait for async operations on an external function so it just receives a pending promise not the string itself. I can even log to the console the string I receive in the function but the markdown itself will just get the object.
+	    // Problem: in the markdown post processor I can't do delays or wait for async operations on an external function so it just receives a pending promise not the string itself. I can even log to the console the string I receive in the function but the markdown itself will just get the Promise not yet resolving the file contents for me.
+	    // ref: https://docs.obsidian.md/Plugins/Editor/Markdown+post+processing
 		//this.registerMarkdownPostProcessor((element, context) => {
 		//	const codeblocks = element.findAll("code");
 
@@ -88,7 +89,7 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 
 
 		/**
-		 * After this is the default examples
+		 * After this in the onload method is the default example code retained for ref
 		 */
 
 		//// Add ribbon icon that generates notice
@@ -196,7 +197,7 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 		 */
 		//console.log("\n\n\n\nstarting");
 		let currentFile = app.workspace.getActiveFile()
-		const currentFileContents = await vault.cachedRead(currentFile);
+		const currentFileContents = await vault.read(currentFile); // had this cachedRead but revised to hopefully improve not overriding file changes.
 		//console.log("\ncurrent contents:");
 		//console.log(currentFileContents);
 		let currentFileContents_split = currentFileContents.split("#![[");
