@@ -18,6 +18,8 @@ Use expects the file to be given the full path from vault home directory. To sim
     Settings
     Files and links
 Then and change "New Link Format" to "Absolute path in vault"
+![Screenshot from 2024-07-09 00-10-30](https://github.com/KeithDEngr/ObsidianPrintoutPlaintext/assets/42358200/8c09e7c6-e3cb-4672-b7ef-34dbc03d7bb4)
+
 
 With that change you should now be able to drag a file from the file browser, append it with an ! like you normally do to embed an image or pdf and it will automatically print it out.
 
