@@ -15,6 +15,8 @@ const filetype: Record<string, string> = {
 	"py": "python",
 };
 
+const reject_filetypes = ["md","png","jpg","jpeg","gif","bmp","svg","mp3","webm","wav","m4a","ogg","3gp","flac","mp4","webm","ogv","pdf"];
+
 export default class EditorPlaintextCalloutAppend extends Plugin {
 	settings: EditorPlaintextCalloutAppendSettings;
 
@@ -202,35 +204,47 @@ export default class EditorPlaintextCalloutAppend extends Plugin {
 		for (const item of currentFileContents_split.slice(1)){
 			//console.log("item: \n"+item);
 			let currentContent = item.split("]]\n");
+			let skip = false;
 			//console.log(currentContent[0]);
 
-			let otherFileContents = await this.obsidianUrl2FileContents(currentContent[0],vault);
+			try{
+				let otherFileContents = await this.obsidianUrl2FileContents(currentContent[0],vault);
 
-			if (otherFileContents.contains("```")){
-				console.log("file ("+currentContent[0]+") contains ```. Ignoring");
-			} else{
+				if ((otherFileContents.contains("```")) | (reject_filetypes.contains(currentContent[0].split('.')[1])) ){
+					console.log("file ("+currentContent[0]+") contains ``` or is a rejected filetype. Ignoring");
+					finalFileContents+="#![["+currentContent[0]+"]]\n"+currentContent[1];
+				} else{
 
-				// check if there is a file printout after. if so, remove it
-				console.log("current content: ");
-				console.log(currentContent[1].slice(0,10));
-				if (currentContent[1].slice(0,8) == "\n---\n```"){
-					let filePrintout = currentContent[1].split("\n---\n```");
-					filePrintout = filePrintout[1].split("\n```\n---\n");
-					currentContent[1] =filePrintout[1];
+					// check if there is a file printout after. if so, remove it
+					//console.log("current content: ");
+					//console.log(currentContent[1].slice(0,10));
+					if (currentContent[1].slice(0,8) == "\n---\n```"){
+						let filePrintout = currentContent[1].split("\n---\n```");
+						filePrintout = filePrintout[1].split("\n```\n---\n");
+						currentContent[1] =filePrintout[1];
+					}
+
+
+					// add the contents back
+					if (!reject_filetypes.contains(currentContent[0].split('.')[1])){
+						console.log("file ("+currentContent[0]+") is being added.")
+						if (Object.keys(filetype).includes(currentContent[0].split('.')[1])){
+							finalFileContents+="#![["+currentContent[0]+"]]\n\n---\n```"+filetype[currentContent[0].split('.')[1]]+"\n"+otherFileContents+"\n```\n---\n"+currentContent[1];
+						} else {
+							finalFileContents+="#![["+currentContent[0]+"]]\n\n---\n```"+currentContent[0].split('.')[1]+"\n"+otherFileContents+"\n```\n---\n"+currentContent[1];
+						}
+
+						//finalFileContents+=currentContent[0]+currentContent[1]+"\n---\n```"+currentContent[0].split('.')[1]+"\n```\n---\n";
+
+						//console.log("contents: \n"+otherFileContents);
+					}else{
+						console.log("skipping .md file"+currentContent[0]);
+						finalFileContents+="#![["+currentContent[0]+"]]\n\n"+currentContent[1];
+					}
 				}
-
-
-				// add the contents back
-				if (Object.keys(filetype).includes(currentContent[0].split('.')[1])){
-					finalFileContents+="#![["+currentContent[0]+"]]\n\n---\n```"+filetype[currentContent[0].split('.')[1]]+"\n"+otherFileContents+"\n```\n---\n"+currentContent[1];
-				} else {
-					finalFileContents+="#![["+currentContent[0]+"]]\n\n---\n```"+currentContent[0].split('.')[1]+"\n"+otherFileContents+"\n```\n---\n"+currentContent[1];
-				}
-
-				//finalFileContents+=currentContent[0]+currentContent[1]+"\n---\n```"+currentContent[0].split('.')[1]+"\n```\n---\n";
-
-				//console.log("contents: \n"+otherFileContents);
-				finalFileContents=finalFileContents;
+			} catch {
+				console.log("failed to add file ("+currentContent[0]+"). Not found.");
+				finalFileContents+="#![["+currentContent[0]+"]]\n"+currentContent[1];
 			}
 		}
 		console.log("\nfinal contents:");
