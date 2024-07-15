@@ -1,7 +1,7 @@
 {
 	"id": "editor-plaintext-callout",
 	"name": "Editor Plaintext Callout",
-	"version": "1.0.0",
+	"version": "0.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Appends to callouts of plaintext files the contents of those files (provided they are in the vault)",
 	"author": "Obsidian",
